@@ -33,9 +33,24 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    buildFeatures {
+        viewBinding = true
+        dataBinding = true
+    }
 }
 
 dependencies {
+    implementation(libs.androidx.legacy.support.v4)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.fragment.ktx)
+    val nav_version = "2.9.6"
+
+    //Navigation component
+    implementation("androidx.navigation:navigation-fragment:${nav_version}")
+    implementation("androidx.navigation:navigation-ui:${nav_version}")
+    implementation("androidx.navigation:navigation-dynamic-features-fragment:${nav_version}")
+    androidTestImplementation("androidx.navigation:navigation-testing:$nav_version")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
