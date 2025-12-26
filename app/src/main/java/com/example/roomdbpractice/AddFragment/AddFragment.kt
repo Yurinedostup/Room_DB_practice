@@ -32,7 +32,7 @@ class AddFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Инициализируем binding
-        _binding.FragmentAddBinding.inflate(inflater, container, false)
+        _binding = FragmentAddBinding.inflate(inflater, container, false)
         return binding.root
     }
 
