@@ -2,6 +2,7 @@ package com.example.roomdbpractice.AddFragment
 
 import androidx.fragment.app.viewModels
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -38,8 +39,24 @@ class AddFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val taskText = binding.textEditTask.text.toString()
+
         binding.buttonConfirmTask.setOnClickListener {
             findNavController().navigate(R.id.action_addFragment_to_listFragment)
+            Log.d("AddFragment", "Нажали сохранить")
+            Log.d("AddFragment", "Ввели ${binding.textEditTask.text}")
         }
+
+        binding.buttonCancelTask.setOnClickListener {
+            findNavController().popBackStack()
+            //navigateUp()
+            //navigate(R.id.action_addFragment_to_listFragment)
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
