@@ -1,14 +1,13 @@
-package com.example.roomdbpractice.AddFragment
+package com.example.roomdbpractice
 
-import androidx.fragment.app.viewModels
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.example.roomdbpractice.R
 import com.example.roomdbpractice.databinding.FragmentAddBinding
 
 class AddFragment : Fragment() {
@@ -16,11 +15,11 @@ class AddFragment : Fragment() {
     private var _binding: FragmentAddBinding? = null
     private val binding get() = _binding!! // Геттер для безопасного доступа
 
+    private val viewModel: TasksViewModel by activityViewModels()
+
     companion object {
         fun newInstance() = AddFragment()
     }
-
-    private val viewModel: AddViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,18 +41,15 @@ class AddFragment : Fragment() {
 
         binding.buttonConfirmTask.setOnClickListener {
             val taskText = binding.textEditTask.text.toString()
-
+            viewModel.addTask(taskText) // Добавляем задачу в список
             Log.d("AddFragment", "Нажали сохранить")
             Log.d("AddFragment", "Ввели $taskText")
             // Возвращаемся к предыдущему фрагменту
             findNavController().navigateUp()
-            //navigate(R.id.action_addFragment_to_listFragment)
         }
 
         binding.buttonCancelTask.setOnClickListener {
             findNavController().navigateUp()
-            //navigateUp()
-            //navigate(R.id.action_addFragment_to_listFragment)
         }
     }
 

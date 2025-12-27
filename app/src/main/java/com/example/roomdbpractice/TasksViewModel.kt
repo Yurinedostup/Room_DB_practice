@@ -1,15 +1,14 @@
-package com.example.roomdbpractice.ListFragment
+package com.example.roomdbpractice
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class ListViewModel : ViewModel() {
+class TasksViewModel : ViewModel() {
 
-    //Приватное изменяемое значение LiveDaata
     private val _taskList = MutableLiveData<List<String>>()
 
-    //Публичное неизменяемое LiveData (только для чтения)
     val taskList: LiveData<List<String>>
         get() = _taskList
 

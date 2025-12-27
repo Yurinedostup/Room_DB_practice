@@ -46,6 +46,8 @@ dependencies {
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    implementation("com.google.android.material:material:1.12.0")
+    debugImplementation ("androidx.compose.ui:ui-tooling:1.6.0")
     val nav_version = "2.9.6"
 
     //Navigation component
