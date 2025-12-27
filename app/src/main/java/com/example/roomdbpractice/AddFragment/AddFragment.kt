@@ -40,16 +40,18 @@ class AddFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val taskText = binding.textEditTask.text.toString()
-
         binding.buttonConfirmTask.setOnClickListener {
-            findNavController().navigate(R.id.action_addFragment_to_listFragment)
+            val taskText = binding.textEditTask.text.toString()
+
             Log.d("AddFragment", "Нажали сохранить")
-            Log.d("AddFragment", "Ввели ${binding.textEditTask.text}")
+            Log.d("AddFragment", "Ввели $taskText")
+            // Возвращаемся к предыдущему фрагменту
+            findNavController().navigateUp()
+            //navigate(R.id.action_addFragment_to_listFragment)
         }
 
         binding.buttonCancelTask.setOnClickListener {
-            findNavController().popBackStack()
+            findNavController().navigateUp()
             //navigateUp()
             //navigate(R.id.action_addFragment_to_listFragment)
         }
