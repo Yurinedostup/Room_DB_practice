@@ -44,10 +44,10 @@ class ListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         //Подписка на изменение данных
-        viewModel.taskList.observe(viewLifecycleOwner) { tasks -> //сейчас тут лист со стрингами
-            //а нам нужно достать стринг
+        viewModel.taskList.observe(viewLifecycleOwner) { tasks ->
             Log.d("ListFragment", "Задачи обновились: $tasks")
-            updateTasksList(tasks)
+            updateTasksList(tasks) // Работа с Task-листом, а поскольку у нас есть LiveData
+            // то изменения будут динамичны
         }
 
 
@@ -56,42 +56,37 @@ class ListFragment : Fragment() {
         }
     }
 
+    // Обработка любых действий с Task-листом
     private fun updateTasksList(tasks: List<String>) {
         // Очищаем контейнер
         binding.tasksContainer.removeAllViews()
 
-        viewModel.taskList.observe(viewLifecycleOwner) { tasks ->
-            for (task in tasks) {
-                // Для каждой задачи создаём и добавляем View
-                val itemBinding = ItemTaskSimpleBinding.inflate(
-                    layoutInflater,
-                    binding.tasksContainer, // Будующий родитель(куда кладём)
-                    false // Не добавлять сразу в родителя
-                )
-                itemBinding.textTask.text = task
-                binding.tasksContainer.addView(itemBinding.root)
 
-                itemBinding.checkBoxCompleted.setOnCheckedChangeListener { _, isChecked ->
-                    if (isChecked) {
-                        itemBinding.textTask.paintFlags =
-                            itemBinding.textTask.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-                    } else {
-                        itemBinding.textTask.paintFlags =
-                            itemBinding.textTask.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-                    }
+        for (task in tasks) {
+            // Для каждой задачи создаём и добавляем View
+            val itemBinding = ItemTaskSimpleBinding.inflate(
+                layoutInflater,
+                binding.tasksContainer, // Будующий родитель(куда кладём)
+                false // Не добавлять сразу в родителя
+            )
+            itemBinding.textTask.text = task
+            binding.tasksContainer.addView(itemBinding.root)
+
+            itemBinding.checkBoxCompleted.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    itemBinding.textTask.paintFlags =
+                        itemBinding.textTask.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                } else {
+                    itemBinding.textTask.paintFlags =
+                        itemBinding.textTask.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
                 }
+            }
 
-//            itemBinding.buttonDelete.setOnClickListener {
-//                viewModel.removeTask(task)
-//            }
+            itemBinding.buttonDelete.setOnClickListener {
+                viewModel.removeTask(task.indexOf(task))
             }
         }
 
-
-
-    }
-
-    private fun deleteTask(tasks: List<String>) {
 
     }
 
