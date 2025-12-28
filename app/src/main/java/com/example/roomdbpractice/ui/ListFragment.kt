@@ -1,19 +1,17 @@
-package com.example.roomdbpractice
+package com.example.roomdbpractice.ui
 
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
 import androidx.navigation.fragment.findNavController
 import com.example.roomdbpractice.databinding.FragmentListBinding
 import com.example.roomdbpractice.databinding.ItemTaskSimpleBinding
 import android.graphics.Paint
+import com.example.roomdbpractice.R
 
 class ListFragment : Fragment() {
 
@@ -24,11 +22,11 @@ class ListFragment : Fragment() {
 
     companion object {
         fun newInstance() = ListFragment()
+        const val TAG = "ListFragment"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // TODO: Use the ViewModel
     }
 
     override fun onCreateView(
@@ -44,8 +42,8 @@ class ListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         //Подписка на изменение данных
-        viewModel.taskList.observe(viewLifecycleOwner) { tasks ->
-            Log.d("ListFragment", "Задачи обновились: $tasks")
+        viewModel.taskListLiveData.observe(viewLifecycleOwner) { tasks ->
+            Log.d(TAG, "Задачи обновились: $tasks")
             updateTasksList(tasks) // Работа с Task-листом, а поскольку у нас есть LiveData
             // то изменения будут динамичны
         }
@@ -56,7 +54,7 @@ class ListFragment : Fragment() {
         }
     }
 
-    // Обработка любых действий с Task-листом
+    // Обработка всех действий с Task-листом
     private fun updateTasksList(tasks: List<String>) {
         // Очищаем контейнер
         binding.tasksContainer.removeAllViews()
@@ -83,7 +81,7 @@ class ListFragment : Fragment() {
             }
 
             itemBinding.buttonDelete.setOnClickListener {
-                viewModel.removeTask(task.indexOf(task))
+                viewModel.removeTask(tasks.indexOf(task))
             }
         }
 

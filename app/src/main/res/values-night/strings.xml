@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="textAdding">Добавьте задачу</string>
+    <string name="hint_enter_task">Введите задачу...</string>
+    <string name="save_task">Добавить</string>
+    <string name="my_tasks">Мои задачи</string>
+    <string name="add_tasks">Добавить задачу</string>
+    <string name="x_mark">X</string>
 </resources>

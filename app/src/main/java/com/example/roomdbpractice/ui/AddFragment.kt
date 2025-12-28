@@ -1,4 +1,4 @@
-package com.example.roomdbpractice
+package com.example.roomdbpractice.ui
 
 import android.os.Bundle
 import android.util.Log
@@ -19,12 +19,11 @@ class AddFragment : Fragment() {
 
     companion object {
         fun newInstance() = AddFragment()
+        const val TAG = "AddFragment"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // TODO: Use the ViewModel
     }
 
     override fun onCreateView(
@@ -42,8 +41,8 @@ class AddFragment : Fragment() {
         binding.buttonConfirmTask.setOnClickListener {
             val taskText = binding.textEditTask.text.toString()
             viewModel.addTask(taskText) // Добавляем задачу в список
-            Log.d("AddFragment", "Нажали сохранить")
-            Log.d("AddFragment", "Ввели $taskText")
+            Log.d(TAG, "Нажали сохранить")
+            Log.d(TAG, "Ввели $taskText")
             // Возвращаемся к предыдущему фрагменту
             findNavController().navigateUp()
         }
