@@ -12,6 +12,7 @@ import com.example.roomdbpractice.databinding.FragmentListBinding
 import com.example.roomdbpractice.databinding.ItemTaskSimpleBinding
 import android.graphics.Paint
 import com.example.roomdbpractice.R
+import com.example.roomdbpractice.data.Task
 
 class ListFragment : Fragment() {
 
@@ -55,7 +56,7 @@ class ListFragment : Fragment() {
     }
 
     // Обработка всех действий с Task-листом
-    private fun updateTasksList(tasks: List<String>) {
+    private fun updateTasksList(tasks: List<Task>) {
         // Очищаем контейнер
         binding.tasksContainer.removeAllViews()
 
@@ -67,7 +68,7 @@ class ListFragment : Fragment() {
                 binding.tasksContainer, // Будующий родитель(куда кладём)
                 false // Не добавлять сразу в родителя
             )
-            itemBinding.textTask.text = task
+            itemBinding.textTask.text = task.text
             binding.tasksContainer.addView(itemBinding.root)
 
             itemBinding.checkBoxCompleted.setOnCheckedChangeListener { _, isChecked ->
