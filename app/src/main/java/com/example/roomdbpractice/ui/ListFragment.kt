@@ -12,14 +12,22 @@ import com.example.roomdbpractice.databinding.FragmentListBinding
 import com.example.roomdbpractice.databinding.ItemTaskSimpleBinding
 import android.graphics.Paint
 import com.example.roomdbpractice.R
-import com.example.roomdbpractice.data.Task
+import com.example.roomdbpractice.data.Tasks
+import com.example.roomdbpractice.data.TasksDatabase
 
 class ListFragment : Fragment() {
 
     private var _binding: FragmentListBinding? = null
     private val binding get() = _binding!! // Геттер для безопасного доступа
 
-    private val viewModel: TasksViewModel by activityViewModels()
+//    private val viewModel: TasksViewModel by activityViewModels()
+
+    private val viewModel: TasksViewModel by activityViewModels {
+        TasksViewModelFactory(
+            TasksDatabase.getDatabase(requireContext()).taskDao(),
+            requireActivity().application
+        )
+    }
 
     companion object {
         fun newInstance() = ListFragment()
@@ -44,9 +52,9 @@ class ListFragment : Fragment() {
 
         //Подписка на изменение данных
         viewModel.taskListLiveData.observe(viewLifecycleOwner) { tasks ->
-            Log.d(TAG, "Задачи обновились: $tasks")
             updateTasksList(tasks) // Работа с Task-листом, а поскольку у нас есть LiveData
             // то изменения будут динамичны
+            Log.d(TAG, "Задачи обновились: $tasks")
         }
 
 
@@ -56,33 +64,41 @@ class ListFragment : Fragment() {
     }
 
     // Обработка всех действий с Task-листом
-    private fun updateTasksList(tasks: List<Task>) {
+    private fun updateTasksList(tasks: List<Tasks>) {
         // Очищаем контейнер
         binding.tasksContainer.removeAllViews()
 
 
-        for (task in tasks) {
+        tasks.forEach { task ->
             // Для каждой задачи создаём и добавляем View
             val itemBinding = ItemTaskSimpleBinding.inflate(
                 layoutInflater,
                 binding.tasksContainer, // Будующий родитель(куда кладём)
                 false // Не добавлять сразу в родителя
             )
+
             itemBinding.textTask.text = task.text
+
             binding.tasksContainer.addView(itemBinding.root)
 
+            itemBinding.checkBoxCompleted.isChecked = task.isCompleted
+
+            // Изменяем UI в соответствии с состоянием задачи
+            if (task.isCompleted) {
+                itemBinding.textTask.paintFlags =
+                    itemBinding.textTask.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+            } else {
+                itemBinding.textTask.paintFlags =
+                    itemBinding.textTask.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+            }
+
+            // Меняем состояние задачи по нажатию на чекбокс
             itemBinding.checkBoxCompleted.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) {
-                    itemBinding.textTask.paintFlags =
-                        itemBinding.textTask.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-                } else {
-                    itemBinding.textTask.paintFlags =
-                        itemBinding.textTask.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-                }
+                viewModel.taskCompletion(task.id, isChecked)
             }
 
             itemBinding.buttonDelete.setOnClickListener {
-                viewModel.removeTask(tasks.indexOf(task))
+                viewModel.removeTask(task.id)
             }
         }
 

@@ -16,5 +16,5 @@ data class Tasks(
     val isCompleted: Boolean = false,
 
     @ColumnInfo
-    val created: Long = System.currentTimeMillis()/1000
+    val created: Long = System.currentTimeMillis()
 )

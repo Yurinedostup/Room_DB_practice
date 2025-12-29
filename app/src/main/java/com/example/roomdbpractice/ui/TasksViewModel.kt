@@ -1,45 +1,60 @@
 package com.example.roomdbpractice.ui
 
+import android.app.Application
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.roomdbpractice.data.Task
+import androidx.lifecycle.viewModelScope
+import androidx.room.Database
+import androidx.room.util.copy
+import com.example.roomdbpractice.data.Tasks
+import com.example.roomdbpractice.data.TasksDAO
+import kotlinx.coroutines.launch
 
-class TasksViewModel : ViewModel() {
+class TasksViewModel(
+    val database: TasksDAO,
+    application: Application
+) : AndroidViewModel(application) {
 
-    private val _taskListLiveData = MutableLiveData<List<Task>>()
-
-    val taskListLiveData: LiveData<List<Task>>
-        get() = _taskListLiveData
+    val taskListLiveData: LiveData<List<Tasks>> = database.getAll()
 
     companion object {
         const val TAG = "ViewModel"
     }
 
     fun addTask(text: String) {
-        // Берём текущее значение списка
-        val currentList = _taskListLiveData.value ?: emptyList()
-
-        val newTask = Task(text = text)
-        // Создаём новый список, добавляя новый элемент списка
-        val newList = currentList.toMutableList().apply {
-            add(newTask)
+        // Запускаем в корутие, операции БД дб асинхронны
+        viewModelScope.launch {
+            val newTask = Tasks(
+                text = text,
+                created = System.currentTimeMillis()/1000,
+                isCompleted = false
+            )
+            // Добавляем задачу в БД
+            database.insert(newTask)
         }
-        // Кладём изменённый список в MutableLiveData<> контейнер
-        _taskListLiveData.value = newList
-        Log.d(TAG, "Добавили элемент $text, список ${_taskListLiveData.value}")
+
+        Log.d(TAG, "Добавили задачу в БД: $text")
     }
 
     fun removeTask(taskId: Int) {
-        val currentList = _taskListLiveData.value ?: return
-        if (taskId in currentList.indices) {
-            val newList = currentList.toMutableList()
-            Log.d(TAG, "Удалили ${newList.get(taskId)}")
-            newList.removeAt(taskId)
-            _taskListLiveData.value = newList
-            Log.d(TAG,"Текущий список ${_taskListLiveData.value}")
+        viewModelScope.launch {
+            // Удаляем из БД
+            Log.d(TAG, "Удалили задачу из БД: ${database.getTaskById(taskId)}")
+            database.deleteTaskById(taskId)
         }
+    }
 
+
+    fun taskCompletion(taskId: Int, isCompleted: Boolean) {
+        viewModelScope.launch {
+            database.updateTaskCompletion(taskId, isCompleted)
+            Log.d(
+                TAG, "Обновили статус задачи ${database.getTaskById(taskId)}:" +
+                        "$isCompleted"
+            )
+        }
     }
 }

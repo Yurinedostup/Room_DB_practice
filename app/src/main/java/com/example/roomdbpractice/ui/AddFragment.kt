@@ -7,7 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.roomdbpractice.data.TasksDatabase
 import com.example.roomdbpractice.databinding.FragmentAddBinding
 
 class AddFragment : Fragment() {
@@ -15,7 +19,12 @@ class AddFragment : Fragment() {
     private var _binding: FragmentAddBinding? = null
     private val binding get() = _binding!! // Геттер для безопасного доступа
 
-    private val viewModel: TasksViewModel by activityViewModels()
+    private val viewModel: TasksViewModel by activityViewModels {
+        TasksViewModelFactory(
+            TasksDatabase.getDatabase(requireContext()).taskDao(),
+            requireActivity().application
+        )
+    }
 
     companion object {
         fun newInstance() = AddFragment()
@@ -41,7 +50,6 @@ class AddFragment : Fragment() {
         binding.buttonConfirmTask.setOnClickListener {
             val taskText = binding.textEditTask.text.toString()
             viewModel.addTask(taskText) // Добавляем задачу в список
-            Log.d(TAG, "Нажали сохранить")
             Log.d(TAG, "Ввели $taskText")
             // Возвращаемся к предыдущему фрагменту
             findNavController().navigateUp()
