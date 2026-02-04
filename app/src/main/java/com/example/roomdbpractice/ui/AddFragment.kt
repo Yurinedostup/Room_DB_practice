@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -50,7 +51,7 @@ class AddFragment : Fragment() {
         binding.buttonConfirmTask.setOnClickListener {
             val taskText = binding.textEditTask.text.toString()
             viewModel.addTask(taskText) // Добавляем задачу в список
-            Log.d(TAG, "Ввели $taskText")
+            Toast.makeText(requireContext(), "Задача добавлена", Toast.LENGTH_SHORT).show()
             // Возвращаемся к предыдущему фрагменту
             findNavController().navigateUp()
         }
