@@ -21,7 +21,8 @@ class ListFragment : Fragment() {
     private var _binding: FragmentListBinding? = null
     private val binding get() = _binding!! // Геттер для безопасного доступа
 
-//    private val viewModel: TasksViewModel by activityViewModels()
+    // Адаптер
+    private lateinit var adapter: TasksAdapter
 
     private val viewModel: TasksViewModel by activityViewModels {
         TasksViewModelFactory(
@@ -51,11 +52,24 @@ class ListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //Подписка на изменение данных
+        // 1. Инициализируем адаптер
+        adapter = TasksAdapter(
+            onCheckboxClick = { taskId, isChecked ->
+                viewModel.taskCompletion(taskId, isChecked)
+            },
+            onDeleteClick = { taskId ->
+                viewModel.removeTask(taskId)
+                Toast.makeText(requireContext(), "Удалено", Toast.LENGTH_SHORT).show()
+            }
+        )
+
+        // 2. Настраиваем RecyclerView
+        binding.recyclerView.adapter = adapter
+
+        // 3. Подписываемся на LiveData
         viewModel.taskListLiveData.observe(viewLifecycleOwner) { tasks ->
-            updateTasksList(tasks) // Работа с Task-листом, а поскольку у нас есть LiveData
-            // то изменения будут динамичны
-            Log.d(TAG, "Задачи обновились: $tasks")
+            adapter.submitList(tasks)
+            Log.d(TAG, "Задачи обновились: ${tasks.size} шт")
         }
 
 
@@ -64,50 +78,7 @@ class ListFragment : Fragment() {
         }
     }
 
-    // Обработка всех действий с Task-листом
-    private fun updateTasksList(tasks: List<Tasks>) {
-        // Очищаем контейнер
-        binding.tasksContainer.removeAllViews() //???
-
-
-        tasks.forEach { task ->
-            // Для каждой задачи создаём и добавляем View
-            val itemBinding = ItemTaskSimpleBinding.inflate(
-                layoutInflater,
-//                null,
-                binding.tasksContainer, // Будующий родитель(куда кладём)
-                false // Не добавлять сразу в родителя
-            )
-
-            itemBinding.textTask.text = task.text
-
-            binding.tasksContainer.addView(itemBinding.root)
-
-            itemBinding.checkBoxCompleted.isChecked = task.isCompleted
-
-            // Изменяем UI в соответствии с состоянием задачи
-            if (task.isCompleted) {
-                itemBinding.textTask.paintFlags =
-                    itemBinding.textTask.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-            } else {
-                itemBinding.textTask.paintFlags =
-                    itemBinding.textTask.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-            }
-
-            // Меняем состояние задачи по нажатию на чекбокс
-            itemBinding.checkBoxCompleted.setOnCheckedChangeListener { _, isChecked ->
-                viewModel.taskCompletion(task.id, isChecked)
-            }
-
-            itemBinding.buttonDelete.setOnClickListener {
-                viewModel.removeTask(task.id)
-                Toast.makeText(requireContext(), "Удалено", Toast.LENGTH_SHORT).show()
-
-            }
-        }
-
-
-    }
+    // 4. Удалили старый метод updateTasksList со всей логикой внутри(теперь она в адаптере и тут выше)
 
     override fun onDestroyView() {
         super.onDestroyView()
