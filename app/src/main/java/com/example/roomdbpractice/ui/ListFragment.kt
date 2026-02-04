@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.roomdbpractice.databinding.FragmentListBinding
 import com.example.roomdbpractice.databinding.ItemTaskSimpleBinding
 import android.graphics.Paint
+import android.widget.Toast
 import com.example.roomdbpractice.R
 import com.example.roomdbpractice.data.Tasks
 import com.example.roomdbpractice.data.TasksDatabase
@@ -66,13 +67,14 @@ class ListFragment : Fragment() {
     // Обработка всех действий с Task-листом
     private fun updateTasksList(tasks: List<Tasks>) {
         // Очищаем контейнер
-        binding.tasksContainer.removeAllViews()
+        binding.tasksContainer.removeAllViews() //???
 
 
         tasks.forEach { task ->
             // Для каждой задачи создаём и добавляем View
             val itemBinding = ItemTaskSimpleBinding.inflate(
                 layoutInflater,
+//                null,
                 binding.tasksContainer, // Будующий родитель(куда кладём)
                 false // Не добавлять сразу в родителя
             )
@@ -99,6 +101,8 @@ class ListFragment : Fragment() {
 
             itemBinding.buttonDelete.setOnClickListener {
                 viewModel.removeTask(task.id)
+                Toast.makeText(requireContext(), "Удалено", Toast.LENGTH_SHORT).show()
+
             }
         }
 
