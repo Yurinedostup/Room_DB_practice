@@ -12,6 +12,8 @@ import com.example.roomdbpractice.databinding.FragmentListBinding
 import com.example.roomdbpractice.databinding.ItemTaskSimpleBinding
 import android.graphics.Paint
 import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.roomdbpractice.R
 import com.example.roomdbpractice.data.Tasks
 import com.example.roomdbpractice.data.TasksDatabase
@@ -51,6 +53,11 @@ class ListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Разделитель между тасками
+        val divider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        divider.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.divider)!!)
+        binding.recyclerView.addItemDecoration(divider)
 
         // 1. Инициализируем адаптер
         adapter = TasksAdapter(

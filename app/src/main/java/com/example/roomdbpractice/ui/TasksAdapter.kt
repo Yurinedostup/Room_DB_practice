@@ -3,6 +3,7 @@ package com.example.roomdbpractice.ui
 import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.roomdbpractice.data.Tasks
 import com.example.roomdbpractice.databinding.ItemTaskSimpleBinding
@@ -21,6 +22,7 @@ class TasksAdapter (
 
         fun bind(task: Tasks) {
             binding.textTask.text = task.text // устанавливаем текст в задачу пришедший в функцию
+            binding.checkBoxCompleted.setOnCheckedChangeListener(null) // У каждой задачи свой слушатель чекбокса
             binding.checkBoxCompleted.isChecked = task.isCompleted /* тоже для чекбокса, всё берётся
             из БД Tasks*/
 
@@ -62,7 +64,27 @@ class TasksAdapter (
 
     // 5. Обновление списка
     fun submitList(newTasks: List<Tasks>) {
+        val diffResult = DiffUtil.calculateDiff(
+            TasksDiffCallback(tasks, newTasks))
         tasks = newTasks
-        notifyDataSetChanged() // Уведомление об изменениях для наблюдателей
+        diffResult.dispatchUpdatesTo(this)
+    }
+
+    class TasksDiffCallback(
+        private val oldList: List<Tasks>,
+        private val newList: List<Tasks>
+    ): DiffUtil.Callback() {
+
+        override fun getOldListSize(): Int = oldList.size
+        override fun getNewListSize(): Int = newList.size
+
+        override fun areItemsTheSame(oldPos: Int, newPos: Int): Boolean {
+                return oldList[oldPos].id == newList[newPos].id
+        }
+
+        override fun areContentsTheSame(oldPos: Int, newPos: Int): Boolean {
+                return oldList[oldPos] == newList[newPos]
+        }
+
     }
 }

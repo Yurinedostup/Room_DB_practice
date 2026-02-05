@@ -18,7 +18,7 @@ abstract interface TasksDAO {
     @Update
     suspend fun update(task: Tasks)
 
-    @Query("SELECT * FROM tasks_table ORDER BY created DESC")
+    @Query("SELECT * FROM tasks_table ORDER BY created ASC")
     fun getAll(): LiveData<List<Tasks>>
 
     @Query("DELETE FROM tasks_table WHERE id = :taskId") // Посмотреть что за синтаксис :
